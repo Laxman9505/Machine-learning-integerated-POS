@@ -135,6 +135,7 @@ def forecast_sales(model, steps):
 @app.route("/salesForecast", methods=["POST"])
 def sales_forecast():
     request_data = request.get_json()
+    print("Received request:", request_data) 
 
     # Check if the required parameters are present in the request
     if 'steps' not in request_data or not isinstance(request_data['steps'], int):

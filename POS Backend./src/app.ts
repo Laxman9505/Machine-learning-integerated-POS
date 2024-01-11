@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import InventoryModel from "./modal/inventoryModal";
 import orderModel from "./modal/orderModal";
 import authRouter from "./routes/auth";
+import commonRouter from "./routes/common";
 import productRouter from "./routes/inventory";
 import orderRouter from "./routes/order";
 import { CustomError, IErrorResponse } from "./utils/error-handler";
@@ -25,6 +26,7 @@ app.use(express.static("public"));
 app.use("/auth", authRouter);
 app.use("/product", productRouter);
 app.use("/order", orderRouter);
+app.use("/common", commonRouter);
 
 app.use("/getDashboardData", async (req: Request, res: Response) => {
   try {
