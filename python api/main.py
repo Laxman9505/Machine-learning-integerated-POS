@@ -91,31 +91,23 @@ def get_item_recommendations_for_customer():
         return jsonify({"error": str(e)}), 500
 # ...
 
-sales_data = [
-    {"timestamp": "2023-01-01", "sales": 100},
-    {"timestamp": "2023-01-02", "sales": 120},
-    {"timestamp": "2023-01-03", "sales": 130},
-    # Add more data as needed
-]
 
-# Convert sales data to DataFrame
-df_sales = pd.DataFrame(sales_data)
-df_sales['timestamp'] = pd.to_datetime(df_sales['timestamp'])
-df_sales.set_index('timestamp', inplace=True)
 
 # ARIMA model
 def train_arima_model(data):
+    # Ensure data is 1-dimensional
+    data = data.values.flatten() if isinstance(data, pd.Series) else data.flatten()
+    
     model = ARIMA(data, order=(1, 1, 1))
     model_fit = model.fit()
     return model_fit
 
 # Function to forecast future sales
-def forecast_sales(model, steps):
+def forecast_sales(model, data, steps):
     forecast = model.get_forecast(steps=steps)
-    forecast_index = pd.date_range(start=df_sales.index[-1] + pd.DateOffset(1), periods=steps)
+    forecast_index = pd.date_range(start=data.index[-1] + pd.DateOffset(1), periods=steps)
     forecast_df = pd.DataFrame({'forecast_sales': forecast.predicted_mean}, index=forecast_index)
     return forecast_df
-
 
 # API endpoint for sales forecasting
 @app.route("/salesForecast", methods=["POST"])
@@ -127,16 +119,21 @@ def sales_forecast():
     if 'steps' not in request_data or not isinstance(request_data['steps'], int):
         return jsonify({"error": "Please provide a valid 'steps' parameter in the request."}), 400
 
+    # Convert sales data to DataFrame
+    df_sales = pd.DataFrame(request_data['sales_data'])
+    df_sales['timestamp'] = pd.to_datetime(df_sales['timestamp'])
+    df_sales.set_index('timestamp', inplace=True)
+
     # Train ARIMA model
     model_fit = train_arima_model(df_sales['sales'])
 
     # Forecast future sales
     steps = request_data['steps']
-    forecast_df = forecast_sales(model_fit, steps)
+    forecast_df = forecast_sales(model_fit, df_sales, steps)
 
     # Convert forecast DataFrame to JSON
     forecast_json = forecast_df.reset_index().to_json(orient='records', date_format='iso')
-
+    print("---this is running")
     return forecast_json
 
 @app.route("/detectAnomalies", methods=["POST"])

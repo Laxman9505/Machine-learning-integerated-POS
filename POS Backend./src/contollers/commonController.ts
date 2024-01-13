@@ -46,14 +46,6 @@ export async function getSalesForecastingData(req: Request, res: Response) {
   try {
     const allOrders = await orderModel.find();
 
-    let totalSales = 0;
-    allOrders.forEach((order) => {
-      const orderTotal = parseFloat(order.TotalAmount); // Convert to a floating-point number
-      if (!isNaN(orderTotal)) {
-        totalSales += orderTotal;
-      }
-    });
-
     const convertMongoDate = (mongoTimestamp: any) => {
       const date = new Date(parseInt(mongoTimestamp));
       const year = date.getFullYear();
@@ -63,7 +55,7 @@ export async function getSalesForecastingData(req: Request, res: Response) {
     };
 
     // Create a map to store total sales for each date
-    const salesMap: any[] = [];
+    const salesMap = new Map();
 
     // Calculate total sales for each date
     allOrders.forEach((order) => {
@@ -71,6 +63,13 @@ export async function getSalesForecastingData(req: Request, res: Response) {
       const orderTotal = parseFloat(order.TotalAmount);
 
       if (!isNaN(orderTotal)) {
+        if (salesMap.has(orderDate)) {
+          // Add the order total to existing date entry
+          salesMap.set(orderDate, salesMap.get(orderDate) + orderTotal);
+        } else {
+          // Create a new entry for the date
+          salesMap.set(orderDate, orderTotal);
+        }
       }
     });
 
@@ -81,34 +80,43 @@ export async function getSalesForecastingData(req: Request, res: Response) {
     }));
 
     console.log("---converted data", sales_data);
-    console.log("---total Sales", totalSales);
+
     const { NoOfSteps } = req.body;
 
     // Make a request to the Python API for sales forecasting
     const pythonApiUrl = "http://127.0.0.1:5000/salesForecast";
     const response = await axios.post(
       pythonApiUrl,
-      { steps: NoOfSteps },
+      { steps: NoOfSteps, sales_data: sales_data.splice(0, 1) },
       { headers: { "Content-Type": "application/json" } }
     );
 
     // Send the response to the React app
     res.json(response.data);
   } catch (error: any) {
-    console.error("Error:", error.message);
+    console.error("Error:", error.response.data.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 }
 
 export async function detectAnamolies(req: Request, res: Response) {
   try {
-    const transactionData = [
-      { transaction_id: 1, amount: 100.0, customer_id: "C1" },
-      { transaction_id: 2, amount: 100.0, customer_id: "C2" },
-      { transaction_id: 3, amount: 100.0, customer_id: "C3" },
-      { transaction_id: 4, amount: 1000.0, customer_id: "C1" },
-      { transaction_id: 5, amount: 100.0, customer_id: "C2" },
-    ];
+    // const transactionData = [
+    //   { transaction_id: 1, amount: 100.0, customer_id: "C1" },
+    //   { transaction_id: 2, amount: 100.0, customer_id: "C2" },
+    //   { transaction_id: 3, amount: 100.0, customer_id: "C3" },
+    //   { transaction_id: 4, amount: 1000.0, customer_id: "C1" },
+    //   { transaction_id: 5, amount: 100.0, customer_id: "C2" },
+    // ];
+    const allOrders = await orderModel.find();
+    const transactionData = allOrders.map((order) => {
+      return {
+        transaction_id: order.OrderId,
+        amount: order.TotalAmount,
+        customer_id: order.CustomerName,
+      };
+    });
+    console.log;
 
     // Make a request to the Python API for sales forecasting
     const pythonApiUrl = "http://127.0.0.1:5000/detectAnomalies";
