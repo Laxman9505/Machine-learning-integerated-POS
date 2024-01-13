@@ -81,6 +81,16 @@ function Sidebar({ isSidebarOpen }) {
             <span className="menu-title">Inventory</span>
           </a>
         </li>
+
+        <li className="nav-item">
+          <a
+            className="nav-link"
+            onClick={() => handleNavigation("/inventory/list")}
+          >
+            <i className="fas fa-cash-register"></i>
+            <span className="menu-title">Statistics</span>
+          </a>
+        </li>
       </ul>
     </nav>
   );

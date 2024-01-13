@@ -5,6 +5,9 @@ from surprise import KNNBasic
 from flask import Flask, request, jsonify
 from statsmodels.tsa.arima.model import ARIMA
 import json
+from sklearn.ensemble import IsolationForest
+from sklearn.preprocessing import StandardScaler
+
 
 app = Flask(__name__)
 
@@ -153,6 +156,37 @@ def sales_forecast():
 
     return forecast_json
 
+@app.route("/detectAnomalies", methods=["POST"])
+def detect_anomalies():
+    try:
+        # Get transactions data from the request
+        transactions = request.get_json()["transactions"]
+
+        # Convert data to DataFrame
+        df = pd.DataFrame(transactions)
+
+        # Extract numerical features for anomaly detection (amount in this case)
+        X = df[['amount']]
+
+        # Standardize the data
+        scaler = StandardScaler()
+        X_scaled = scaler.fit_transform(X)
+
+        # Train the Isolation Forest model
+        model = IsolationForest(contamination=0.05)  # Adjust contamination based on your data
+        model.fit(X_scaled)
+
+        # Predict anomalies
+        df['anomaly_score'] = model.decision_function(X_scaled)
+        df['is_anomaly'] = model.predict(X_scaled)
+
+        # Return the results
+        result = df[['transaction_id', 'amount', 'is_anomaly']].to_dict(orient='records')
+        return jsonify({"result": result})
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"error": "Something went wrong"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
