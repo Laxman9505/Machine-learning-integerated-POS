@@ -28,6 +28,7 @@ function App() {
   const Orders = React.lazy(() => import("./pages/Orders/Orders"));
   const Pos = React.lazy(() => import("./pages/Pos"));
   const Home = React.lazy(() => import("./pages/Home"));
+  const Statistics = React.lazy(() => import("./pages/Statistics/Statistics"));
 
   return (
     <Provider store={Store()}>
@@ -43,6 +44,8 @@ function App() {
                 <Route path="/orders/*" element={<Orders />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/inventory/*" element={<Inventory />} />
+                <Route path="/statistics/*" element={<Statistics />} />
+
                 <Route path="/404" element={<PageNotFound />} />
               </Routes>
             </Layout>

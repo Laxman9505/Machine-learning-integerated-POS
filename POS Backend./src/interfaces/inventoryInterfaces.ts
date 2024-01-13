@@ -5,6 +5,7 @@ import { Document } from "mongoose";
 export interface IInventory extends Document {
   Request: IRequest;
   Image: Buffer;
+  ItemName?: string;
 }
 // Interface for Item Object.
 

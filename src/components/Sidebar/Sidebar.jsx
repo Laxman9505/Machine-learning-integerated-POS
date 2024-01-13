@@ -25,10 +25,17 @@ function Sidebar({ isSidebarOpen }) {
     loading: Loading,
   });
 
+  const StatisticsLoadable = Loadable({
+    loader: () => import("../../pages/Statistics/Statistics"),
+    loading: Loading,
+  });
+
   const linkToComponent = {
     "/orders/all": OrdersLoadable,
     "/pos": PosLoadable,
     "/inventory/list": InventoryLoadable,
+
+    "/statistics/recomendation": StatisticsLoadable,
   };
 
   function handleNavigation(pathname) {
@@ -85,7 +92,7 @@ function Sidebar({ isSidebarOpen }) {
         <li className="nav-item">
           <a
             className="nav-link"
-            onClick={() => handleNavigation("/inventory/list")}
+            onClick={() => handleNavigation("/statistics/recomendation")}
           >
             <i className="fas fa-cash-register"></i>
             <span className="menu-title">Statistics</span>

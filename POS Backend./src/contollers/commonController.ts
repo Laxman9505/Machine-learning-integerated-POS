@@ -2,20 +2,41 @@
 
 import axios from "axios";
 import { Request, Response } from "express";
+import InventoryModel from "../modal/inventoryModal";
+import orderModel from "../modal/orderModal";
+import { paginate } from "../utils/paginate";
 
 export async function getRecommendedProducts(req: Request, res: Response) {
   try {
     const { CustomerName } = req.body;
+    const allorders = await paginate(orderModel, {}, 1, 20);
+    const formattedOrders = allorders?.items?.map((order) => {
+      return {
+        order_id: order.id,
+        customer_id: order.CustomerName,
+        items: order.ProductList?.map((product) => product.ProductName),
+      };
+    });
 
     // Make a request to the Python API for recommended products
     const pythonApiUrl =
       "http://127.0.0.1:5000/getItemRecommendationsForCustomer";
-    const response = await axios.get(pythonApiUrl, {
-      params: { customer_id: CustomerName },
+    const response = await axios.post(pythonApiUrl, {
+      orders_data: formattedOrders,
     });
 
+    const recommendedProducts = response.data?.item_recommendations?.map(
+      (item: any) => item[0]
+    );
+    const allProducts = await paginate(InventoryModel, {}, 1, 20);
+
+    const filteredRecomendedProducts = allProducts.items.filter((product) =>
+      recommendedProducts.includes(product.ItemName)
+    );
+    console.log("--reocomended products ", filteredRecomendedProducts);
+
     // Send the response to the React app
-    res.json(response.data);
+    res.json(filteredRecomendedProducts);
   } catch (error: any) {
     console.error("Error:", error.message);
     res.status(500).json({ message: "Internal Server Error" });

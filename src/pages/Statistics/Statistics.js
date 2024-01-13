@@ -56,17 +56,17 @@ function Statistics() {
                   pages={[
                     {
                       name: "Recomendation",
-                      path: "Statistics/recomendation",
+                      path: "statistics/recomendation",
                       loadable: Recomendation,
                     },
                     {
                       name: "Sales Forecasting",
-                      path: "Statistics/sales-forecasting",
+                      path: "statistics/sales-forecasting",
                       loadable: SalesForecasting,
                     },
                     {
                       name: "Fraud Detection",
-                      path: "Statistics/fraud-detection",
+                      path: "statistics/fraud-detection",
                       loadable: FraudDetection,
                     },
                   ]}
