@@ -96,3 +96,63 @@ export const getDashboardDataEpic = (action$) =>
       )
     )
   );
+export const getRecomendedProductsEpic = (action$) =>
+  action$.pipe(
+    ofType("GET_RECOMENDED_PRODUCTS_REQUEST"),
+    mergeMap((action) =>
+      from(API.get("/common/getRecommendedProducts")).pipe(
+        mergeMap((response) => {
+          return of({
+            type: "GET_RECOMENDED_PRODUCTS_SUCCESS",
+            payload: response.data,
+          });
+        }),
+        catchError((error) =>
+          of({
+            type: "GET_RECOMENDED_PRODUCTS_FAILURE",
+            payload: error?.response?.data?.message?.[0]?.message,
+          })
+        )
+      )
+    )
+  );
+export const getSalesForecastingDataEpic = (action$) =>
+  action$.pipe(
+    ofType("GET_SALES_FORECASTING_REQUEST"),
+    mergeMap((action) =>
+      from(API.get("/common/getSalesForecastingData")).pipe(
+        mergeMap((response) => {
+          return of({
+            type: "GET_SALES_FORECASTING_SUCCESS",
+            payload: response.data,
+          });
+        }),
+        catchError((error) =>
+          of({
+            type: "GET_SALES_FORECASTING_FAILURE",
+            payload: error?.response?.data?.message?.[0]?.message,
+          })
+        )
+      )
+    )
+  );
+export const getFraudDetectionDatapic = (action$) =>
+  action$.pipe(
+    ofType("GET_FRAUD_DETECTION_DATA_REQUEST"),
+    mergeMap((action) =>
+      from(API.get("/common/detectAnamolies")).pipe(
+        mergeMap((response) => {
+          return of({
+            type: "GET_FRAUD_DETECTION_DATA_SUCCESS",
+            payload: response.data,
+          });
+        }),
+        catchError((error) =>
+          of({
+            type: "GET_FRAUD_DETECTION_DATA_FAILURE",
+            payload: error?.response?.data?.message?.[0]?.message,
+          })
+        )
+      )
+    )
+  );

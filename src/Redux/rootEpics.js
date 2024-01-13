@@ -6,6 +6,9 @@ import { addProduct, editProduct, getAllProducts } from "./inventoryEpics";
 
 import {
   getDashboardDataEpic,
+  getFraudDetectionDatapic,
+  getRecomendedProductsEpic,
+  getSalesForecastingDataEpic,
   loginEpic,
   registerOnBoardUserEpic,
   sendOTPtoMail,
@@ -21,5 +24,8 @@ export const rootEpic = combineEpics(
   registerOnBoardUserEpic,
   getDashboardDataEpic,
   placeOrderEpic,
-  sendOTPtoMail
+  sendOTPtoMail,
+  getRecomendedProductsEpic,
+  getSalesForecastingDataEpic,
+  getFraudDetectionDatapic
 );
