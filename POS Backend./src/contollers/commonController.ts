@@ -44,6 +44,16 @@ export async function getRecommendedProducts(req: Request, res: Response) {
 }
 export async function getSalesForecastingData(req: Request, res: Response) {
   try {
+    const allOrders = await orderModel.find();
+
+    let totalSales = 0;
+    allOrders.forEach((order) => {
+      const orderTotal = parseFloat(order.TotalAmount); // Convert to a floating-point number
+      if (!isNaN(orderTotal)) {
+        totalSales += orderTotal;
+      }
+    });
+    console.log("---total Sales", totalSales);
     const { NoOfSteps } = req.body;
 
     // Make a request to the Python API for sales forecasting
