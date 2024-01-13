@@ -53,6 +53,34 @@ export async function getSalesForecastingData(req: Request, res: Response) {
         totalSales += orderTotal;
       }
     });
+
+    const convertMongoDate = (mongoTimestamp: any) => {
+      const date = new Date(parseInt(mongoTimestamp));
+      const year = date.getFullYear();
+      const month = (date.getMonth() + 1).toString().padStart(2, "0");
+      const day = date.getDate().toString().padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    };
+
+    // Create a map to store total sales for each date
+    const salesMap: any[] = [];
+
+    // Calculate total sales for each date
+    allOrders.forEach((order) => {
+      const orderDate = convertMongoDate(order.OrderDate);
+      const orderTotal = parseFloat(order.TotalAmount);
+
+      if (!isNaN(orderTotal)) {
+      }
+    });
+
+    // Convert salesMap to the desired data structure
+    const sales_data = Array.from(salesMap, ([timestamp, sales]) => ({
+      timestamp,
+      sales,
+    }));
+
+    console.log("---converted data", sales_data);
     console.log("---total Sales", totalSales);
     const { NoOfSteps } = req.body;
 
