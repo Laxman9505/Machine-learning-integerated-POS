@@ -1,8 +1,16 @@
 /** @format */
 
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 
 const Recomendation = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch({
+      type: "",
+    });
+  }, []);
   return (
     <div className="menu_right">
       <>
