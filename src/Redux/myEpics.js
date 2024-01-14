@@ -120,7 +120,7 @@ export const getSalesForecastingDataEpic = (action$) =>
   action$.pipe(
     ofType("GET_SALES_FORECASTING_REQUEST"),
     mergeMap((action) =>
-      from(API.get("/common/getSalesForecastingData")).pipe(
+      from(API.post("/common/getSalesForecastingData", action.payload)).pipe(
         mergeMap((response) => {
           return of({
             type: "GET_SALES_FORECASTING_SUCCESS",

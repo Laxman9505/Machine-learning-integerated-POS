@@ -116,7 +116,7 @@ export async function detectAnamolies(req: Request, res: Response) {
         customer_id: order.CustomerName,
       };
     });
-    console.log;
+    console.log("---transaction data", transactionData);
 
     // Make a request to the Python API for sales forecasting
     const pythonApiUrl = "http://127.0.0.1:5000/detectAnomalies";
