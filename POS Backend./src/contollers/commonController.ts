@@ -17,13 +17,14 @@ export async function getRecommendedProducts(req: Request, res: Response) {
         items: order.ProductList?.map((product) => product.ProductName),
       };
     });
-
+    console.log("---input data", formattedOrders);
     // Make a request to the Python API for recommended products
     const pythonApiUrl =
       "http://127.0.0.1:5000/getItemRecommendationsForCustomer";
     const response = await axios.post(pythonApiUrl, {
       orders_data: formattedOrders,
     });
+    console.log("--response data", response.data);
 
     const recommendedProducts = response.data?.item_recommendations?.map(
       (item: any) => item[0]
@@ -33,7 +34,6 @@ export async function getRecommendedProducts(req: Request, res: Response) {
     const filteredRecomendedProducts = allProducts.items.filter((product) =>
       recommendedProducts.includes(product.ItemName)
     );
-    console.log("--reocomended products ", filteredRecomendedProducts);
 
     // Send the response to the React app
     res.json(filteredRecomendedProducts);
